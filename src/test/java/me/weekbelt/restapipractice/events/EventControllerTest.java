@@ -4,13 +4,13 @@ import me.weekbelt.restapipractice.BaseControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class EventControllerTest extends BaseControllerTest {
     @Autowired
@@ -43,7 +43,7 @@ public class EventControllerTest extends BaseControllerTest {
                 .content(objectMapper.writeValueAsString(event)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
         ;
-        //then
     }
 }
