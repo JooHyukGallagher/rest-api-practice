@@ -34,8 +34,8 @@ public class EventControllerTest extends BaseControllerTest {
                 .endEventDateTime(LocalDateTime.of(2018, 11, 26, 14, 21))
                 .basePrice(100)
                 .maxPrice(200)
-                    .limitOfEnrollment(100)
-                    .location("강남역 D2 스타트업 팩토리")
+                .limitOfEnrollment(100)
+                .location("강남역 D2 스타트업 팩토리")
                 .build();
         //when
         mockMvc.perform(post("/api/events")
@@ -75,6 +75,18 @@ public class EventControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON)
                 .content(objectMapper.writeValueAsString(event)))
+                .andExpect(status().isBadRequest())
+        ;
+    }
+
+    @Test
+    public void createEvent_Bad_Request_Empty_Input() throws Exception {
+        //given
+        EventDto eventDto = new EventDto();
+        //when
+        this.mockMvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(eventDto)))
                 .andExpect(status().isBadRequest())
         ;
     }
