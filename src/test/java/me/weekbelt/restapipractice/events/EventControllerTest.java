@@ -1,6 +1,7 @@
 package me.weekbelt.restapipractice.events;
 
 import me.weekbelt.restapipractice.BaseControllerTest;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
@@ -25,6 +26,7 @@ public class EventControllerTest extends BaseControllerTest {
     public void createEvent() throws Exception {
         //given
         Event event = Event.builder()
+                .id(100)
                 .name("Spring")
                 .description("REST API Development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 23, 14, 21))
@@ -33,8 +35,11 @@ public class EventControllerTest extends BaseControllerTest {
                 .endEventDateTime(LocalDateTime.of(2018, 11, 26, 14, 21))
                 .basePrice(100)
                 .maxPrice(200)
-                .limitOfEnrollment(100)
-                .location("강남역 D2 스타트업 팩토리")
+                    .limitOfEnrollment(100)
+                    .location("강남역 D2 스타트업 팩토리")
+                .free(true)
+                .offline(false)
+                .eventStatus(EventStatus.PUBLISHED)
                 .build();
         //when
         mockMvc.perform(post("/api/events")
@@ -44,6 +49,9 @@ public class EventControllerTest extends BaseControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(jsonPath("id").value(Matchers.not(100)))
+                .andExpect(jsonPath("free").value(Matchers.not(true)))
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
         ;
     }
 }
