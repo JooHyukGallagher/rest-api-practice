@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,17 +26,19 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody @Valid EventDto eventDto,
-                                         BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
+                                         Errors errors) {
+        if (errors.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
 
-        eventValidator.validate(eventDto, bindingResult);
-        if (bindingResult.hasErrors()){
-            return ResponseEntity.badRequest().build();
+        eventValidator.validate(eventDto, errors);
+        if (errors.hasErrors()){
+            return ResponseEntity.badRequest().body(errors);
         }
 
+        // 서비스 계층
         Event event = modelMapper.map(eventDto, Event.class);
+        event.update();
         Event newEvent = eventRepository.save(event);
         URI createUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
         return ResponseEntity.created(createUri).body(event);
